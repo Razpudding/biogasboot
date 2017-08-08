@@ -16,15 +16,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sjoerdbeentjes/biogasboot.git"
+    "url": "git+https://github.com/Razpudding/biogasboot.git"
   },
   "keywords": [],
   "author": "",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/sjoerdbeentjes/biogasboot/issues"
+    "url": "https://github.com/Razpudding/biogasboot/issues"
   },
-  "homepage": "https://github.com/sjoerdbeentjes/biogasboot#readme",
+  "homepage": "https://github.com/Razpudding/biogasboot#readme",
   "xo": {
     "space": true,
     "env": [

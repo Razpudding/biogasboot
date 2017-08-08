@@ -2,6 +2,7 @@
 # Biogasboot data visualization
 The datavisualization in this repository has been built to provide an insight to the inner workings of the [Biogasboot](http://www.biogasboot.nl/) location in Amsterdam, The Netherlands. On this boat, food waste from the nearby [Restaurant de Ceuvel](http://deceuvel.nl/en/) is tranformed into methane gas which is reused in the kitchen. To achieve this, finely ground food leftovers are fed into the boat where they ferment. During this process, an array of sensors and self correcting feedback systems keep track of the in- and outflow of all the materials involved as well as their status (temperature, acidity, etc.)
 Our Biogasboot data visualisation system visualizes this sensor data and the state of the system in an attempt to better understand the process and to allow operators to closely monitor and influence the fermentation process.
+A live demo of this system can be found [here](http://biogasboot.herokuapp.com/operator/dashboard)
 
 ## Concept
 We have 2 specific target audiences that both needed their own approach.
