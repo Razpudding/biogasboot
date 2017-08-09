@@ -42,8 +42,8 @@ const operatorDashboardHistory = require('./routes/operator/dashboard-history');
 mongoose.connect(process.env.DB_URL);
 
 // Get files/data from FTP
-// console.log(getFTPfiles)
-// FTP.checkForNewLocalFiles('value');
+//console.log(getFTPfiles)
+//FTP.checkForNewLocalFiles('value');
 // FTP.checkForNewLocalFiles('status');
 // FTP.checkForNewLocalFiles('alarm'); // does not work with current filenames
 

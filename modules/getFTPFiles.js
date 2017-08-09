@@ -22,6 +22,7 @@ function checkForNewLocalFiles(directoryKey) {
   fs.readdir(path.join(__dirname, FTP[directoryKey].downloadDir), (err, files) => {
     files.forEach(file => {
       fs.readFile(path.join(__dirname, `${FTP[directoryKey].downloadDir}${file}`), (err, data) => {
+        console.log("Adding file to mongodb", file);
         if (err) throw err;
         parseFileDataToJSON(data, directoryKey);
       });
@@ -80,8 +81,10 @@ function removeDownloadedFTPFile(file, directoryKey) {
 
 function parseFileDataToJSON(data, directoryKey) {
   // Parse data from file to json
+  //console.log("parseFileDataToJSON called with directoryKey:",directoryKey);
+  //console.log("expected columns:", FTP[directoryKey].fileColumns)
   parse(data, {
-    delimiter: ';',
+    delimiter: ',',
     columns: FTP[directoryKey].fileColumns
   }, (err, parsedData) => {
     if (err) throw err;
