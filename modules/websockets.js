@@ -79,6 +79,7 @@ function sendGasBagLow() {
 
 function webSokets(app, io) {
   // Setting paramerts for getting data out of the database
+  //TODO: replace this with logic that selects the last month of data auto
   const range = 1483225200;
   const inputRange = 1;
   const months = moment.duration(inputRange, 'months').valueOf();

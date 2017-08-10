@@ -10,10 +10,14 @@ const feedCalculation = require('../modules/feed-calculation');
 const gasCalculation = require('../modules/gas-calculation');
 const config = require('../modules/config');
 
+//TODO: rewrite so these routes dont use param(name) which is depracated but req.body
+//TODO: rewrite so there's default start and enddate (or better error logging)
+//Example of route: http://localhost:3000/api/range?api_key=[process.env.API_KEY]&dateStart=1501502400&dateEnd=1501804800
 router.get('/range', (req, res, next) => {
   if (req.param('api_key') && req.param('api_key') == process.env.API_KEY) {
     const startDate = moment(Number(req.param('dateStart') * 1000));
     const endDate = moment(Number(req.param('dateEnd') * 1000));
+    console.log("/range route activated with start, enddate: ", startDate, endDate);
     DataPoint.find({
       Date: {
         $gte: startDate.toDate(),
