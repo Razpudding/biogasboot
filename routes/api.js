@@ -31,6 +31,7 @@ router.get('/range', (req, res, next) => {
   }
 });
 
+//Example of route: http://localhost:3000/api/range/average?api_key=[process.env.API_KEY]&dateStart=1501502400&dateEnd=1501804800
 router.get('/range/average', (req, res, next) => {
   if (req.param('api_key') && req.param('api_key') == process.env.API_KEY) {
     const startDate = moment(Number(req.param('dateStart') * 1000));

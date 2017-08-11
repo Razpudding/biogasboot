@@ -79,12 +79,13 @@ function sendGasBagLow() {
 
 function webSokets(app, io) {
   // Setting paramerts for getting data out of the database
-  //TODO: replace this with logic that selects the last month of data auto
-  const range = 1483225200;
+  //TODO: replace this with logic that selects the last month of data auto. start and end are hardcoded for the moment
+  const range = 1501502400;
   const inputRange = 1;
   const months = moment.duration(inputRange, 'months').valueOf();
   const startDate = moment(Number(range) * 1000);
-  const endDate = moment(Number(startDate + months));
+  // const endDate = moment(Number(startDate + months));
+  const endDate = moment(Number(1501804800) * 1000);
   // Query the database
   dataPoint.find({
     Date: {
@@ -97,31 +98,35 @@ function webSokets(app, io) {
     .exec((err, dataPoints) => {
       // Setting variables for sending data to the frontend
       let i = 0;
+      //What does sendItemsCount do and why is it 30?
       const sendItemsCount = 30;
       // Stop backend from spamming notifcations
       let sendTimeOutHigh = false;
       let sendTimeOutLow = false;
 
-      // For simulating real-time this interval was made, resetting I when index is to high
+      // For simulating real-time this interval was made, resetting I when index is too high
       setInterval(() => {
         if (!dataPoints[i + sendItemsCount]) {
+          console.log("resetting i, thirty items passed")
           i = 0;
         }
         const dataCollection = [];
         // Looping over data collection and checking if bag height is in range.
+        //TODO: turned this func off because it was buggy. Fix and turn on again later
         for (let x = 0; x < sendItemsCount; x++) {
           dataCollection.push(dataPoints[x + i]);
-          if (dataPoints[x + i].Bag_Height >= usedValues[2].high) {
-            if (dataPoints[x + i - 1].Bag_Height < usedValues[2].high && sendTimeOutHigh === false) {
-              sendTimeOutHigh = true;
-              sendGasBagHigh();
-            }
-          } else if (dataPoints[x + i].Bag_Height <= usedValues[2].low) {
-            if (dataPoints[x + i - 1].Bag_Height > usedValues[2].low && sendTimeOutLow === false) {
-              sendTimeOutLow = true;
-              sendGasBagLow();
-            }
-          }
+          // if (dataPoints[x + i].Bag_Height >= usedValues[2].high) {
+          //   //Why is it x+i-1, wouldn't that result in datapoint[-1] on the first run, which would yield undefined?
+          //   if (dataPoints[x + i - 1].Bag_Height < usedValues[2].high && sendTimeOutHigh === false) {
+          //     sendTimeOutHigh = true;
+          //     sendGasBagHigh();
+          //   }
+          // } else if (dataPoints[x + i].Bag_Height <= usedValues[2].low) {
+          //   if (dataPoints[x + i - 1].Bag_Height > usedValues[2].low && sendTimeOutLow === false) {
+          //     sendTimeOutLow = true;
+          //     sendGasBagLow();
+          //   }
+          // }
         }
 
         i += 30;
@@ -129,7 +134,7 @@ function webSokets(app, io) {
         sendTimeOutLow = false;
         // emitting the data to the frontend
         io.sockets.emit('dataPoint', dataCollection, config.tileStatus(dataPoints[i]));
-      }, 50);
+      }, 500);
     });
 }
 
