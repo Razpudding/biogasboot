@@ -43,7 +43,7 @@ if (document.querySelector('#chart') && document.querySelector('#chart').clientW
   let maxDate = d3.timeMinute.offset(minDate, -ticks);
 
   const parseTime = d3.timeParse('%d-%m-%y %H:%M:%S');
-  const formatTime = d3.timeFormat('%H:%M');
+  const formatTime = d3.timeFormat('%d-%m %H:%M');
 
   const chart = d3.select('#chart')
     .attr('width', width + margin.left + margin.right)
@@ -69,7 +69,9 @@ if (document.querySelector('#chart') && document.querySelector('#chart').clientW
   const xAxis = d3
     .axisBottom()
     .tickFormat(d => {
-      const date = d3.timeMinute.offset(d, -ticks);
+      //Is this const even used?
+      //const date = d3.timeMinute.offset(d, -ticks);
+      //console.log(d);
       return formatTime(d);
     })
     .scale(x);
@@ -122,6 +124,7 @@ if (document.querySelector('#chart') && document.querySelector('#chart').clientW
     .attr('y1', y(usedValues[2].high))
     .attr('y2', y(usedValues[2].high));
 
+  //When a set of data points is received from the socket, format the data and feed it to the tick loop
   socket.on('dataPoint', points => {
     const lastIndex = points.length - 1;
 
@@ -137,14 +140,25 @@ if (document.querySelector('#chart') && document.querySelector('#chart').clientW
     tick(points);
   });
 
-  // Main loop
+  // Main loop feeding data to the chart
   function tick(points) {
+    //spread points into existing data
     data = [...data, ...points];
+    console.log("printing data");
+    console.table(data)
 
     // Remote old data (max 20 points)
-    if (data.length > ticks + 1) {
-      data.shift();
+    //TODO: find out if this really works because it looks like it doesnt
+    //  Ok so what happens is every tick, one datapoint is deleted fromt he start of the data array :P
+    //  This doesnt make a lot of sense because in the current case, 30 new ticks are added
+    //  I dont know what this was supposed to accomplish but I guess you'd need to remove enough elements to
+    //  End up with data.length =< ticks
+    //  -> Rewrote to match the intended logic
+    let dif = data.length - (ticks +1)
+    if (dif > 0) {
+      data.splice(0, dif) 
     }
+    console.log(data.length)
 
     x
       .domain([minDate, maxDate]);

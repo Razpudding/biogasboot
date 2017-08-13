@@ -4,7 +4,6 @@ The datavisualization in this repository has been built to provide an insight to
 Our Biogasboot data visualisation system visualizes this sensor data and the state of the system in an attempt to better understand the process and to allow operators to closely monitor and influence the fermentation process.
 A live demo of this system can be found [here](http://biogasboot.herokuapp.com/operator/dashboard)
 
-
 ## Usage
 For now operators can see live visualizations of the data generated on the Biogasboot. The visualization shows all the values that are available. It is also possible to look at the historical data. The filter funcionality isn't finished yet though. There are multiple API endpoints that can be used to filter and format the data from the FTP server.
 
@@ -24,28 +23,11 @@ All views of the dashboard currently in the app
 ![Live mobile Dashboard bundle](md-media/mobile-dashboard-bundle.png)
 
 ## ToDo
-* [x] Push notification for operators if something goes wrong
-* [x] Layout for the history section
-* [x] Filters for the history section
-* [x] D3 Graphs for comparing time ranges
-* [x] Interactive view of the Biogasboot
-* [x] Dashboard view for in Café de Ceuvel
-* [x] Build a guide for the operator application
-
-## Finished ToDo's
-* [x] Range selector to select two dates and pass the range to the front-end
-* [x] Data tiles on real-time dashboard have to change color based on status data
-* [x] Create functions for showing week, month or year in history view
-* [x] API endpoints for data in specific range
-* [x] API endpoint for formatting data to get avarage values per day.
-* [x] Get files via FTP based on timestamp
-
-## Wishlist
-* [ ] Live data from the Biogasboot
-* [ ] Plotting of status data
-* [ ] Piechart of process devices 
-* [ ] Possibility for admins to add event data to the dashboard
-* [ ] Smart defaults for selecting range's / views in the backend
+* [ ] Rewrite dashboard view to allow the user to select a date-range
+* [ ] Clean up this repo (delete files like deprecated views)
+* [ ] Have the dashboard use the API to load data, not directly from the mongo db
+* [ ] Add dates and labels to the axis of all charts
+* [ ] Resolve deprecation warnings on startup
 
 ## API Endpoints
 The application has multiple API endpoints. This is an overview of all the possibilities.
@@ -146,14 +128,3 @@ Diego Staphorst   | Sjoerd Beentjes  | Timo Verkroost  | Camille Sébastien
 --- | --- | --- | ---
 ![Diego Staphorst][diego] | ![Sjoerd Beentjes][sjoerd] | ![Timo Verkroost][timo] | ![Camille Sébastien][camille]
 [Contributor link](contributors/diego.md) | [Contributor link](contributors/sjoerd.md) | [Contributor link](contributors/timo.md) | [Contributor link](Contributor/camille.md)
-
-## License
-MIT © Diego Staphorst, Sjoerd Beentjes, Timo Verkroost, Camille Sébastien
-
-[diego]: https://avatars0.githubusercontent.com/u/10053770?v=3&s=400 "Diego Staphorst"
-
-[sjoerd]: https://avatars3.githubusercontent.com/u/11621275?v=3&s=400 "Sjoerd Beentjes"
-
-[timo]: https://avatars2.githubusercontent.com/u/17787175?v=3&s=400 "Timo Verkroost"
-
-[Camille]: https://avatars1.githubusercontent.com/u/8942820?v=3&s=400 "Camille Sébastien"

@@ -1,6 +1,7 @@
 const d3 = require('d3');
 const config = require('../../../modules/config');
 
+//TODO: add month to datestamps on the x-axis
 if (document.querySelector('#history-graph') && document.querySelector('#history-graph').clientWidth) {
   const containerWidth = document.querySelector('#history-graph').parentNode.clientWidth;
   const containerHeight = document.querySelector('#history-graph').parentNode.clientHeight;
