@@ -85,7 +85,7 @@ function webSokets(app, io) {
   const months = moment.duration(inputRange, 'months').valueOf();
   const startDate = moment(Number(range) * 1000);
   // const endDate = moment(Number(startDate + months));
-  const endDate = moment(Number(1501804800) * 1000);
+  const endDate = moment(Number(1503187200) * 1000);
   // Query the database
   dataPoint.find({
     Date: {
@@ -104,10 +104,11 @@ function webSokets(app, io) {
       let sendTimeOutHigh = false;
       let sendTimeOutLow = false;
 
+      //TODO: remove this when real data comes in. Resetting to an arbtrary point in time doesn't seem useful after that
       // For simulating real-time this interval was made, resetting I when index is too high
       setInterval(() => {
         if (!dataPoints[i + sendItemsCount]) {
-          console.log("resetting i, thirty items passed")
+          console.log("Ran out of data to serve, resetting index and reserving data from start")
           i = 0;
         }
         const dataCollection = [];
@@ -128,13 +129,12 @@ function webSokets(app, io) {
           //   }
           // }
         }
-
-        i += 30;
+        i += sendItemsCount;
         sendTimeOutHigh = false;
         sendTimeOutLow = false;
         // emitting the data to the frontend
         io.sockets.emit('dataPoint', dataCollection, config.tileStatus(dataPoints[i]));
-      }, 5000);
+      }, 1000);
     });
 }
 

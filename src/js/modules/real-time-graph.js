@@ -144,22 +144,14 @@ if (document.querySelector('#chart') && document.querySelector('#chart').clientW
   function tick(points) {
     //spread points into existing data
     data = [...data, ...points];
-    console.log("printing data");
-    console.table(data)
-
-    // Remote old data (max 20 points)
-    //TODO: find out if this really works because it looks like it doesnt
-    //  Ok so what happens is every tick, one datapoint is deleted fromt he start of the data array :P
-    //  This doesnt make a lot of sense because in the current case, 30 new ticks are added
-    //  I dont know what this was supposed to accomplish but I guess you'd need to remove enough elements to
-    //  End up with data.length =< ticks
     //  -> Rewrote to match the intended logic
     let dif = data.length - (ticks +1)
     if (dif > 0) {
       data.splice(0, dif) 
     }
-    console.log(data.length)
-
+    //console.log("printing data");
+    //console.table(data)
+    
     x
       .domain([minDate, maxDate]);
 

@@ -1,7 +1,8 @@
 const d3 = require('d3');
 const config = require('../../../modules/config');
 
-//TODO: add month to datestamps on the x-axis
+//TODO: add month to datestamps on the x-axis. This means actually connecting the ticks to the data because atm
+// The available pixels are divided over days in the month january (31) no matter which month you select :P
 if (document.querySelector('#history-graph') && document.querySelector('#history-graph').clientWidth) {
   const containerWidth = document.querySelector('#history-graph').parentNode.clientWidth;
   const containerHeight = document.querySelector('#history-graph').parentNode.clientHeight;
