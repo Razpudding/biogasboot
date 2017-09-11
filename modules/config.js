@@ -13,8 +13,8 @@ module.exports = {
       title: 'PH-waarde',
       low: 7,
       high: 7.5,
-      min: 1,
-      max: 14
+      min: 5,
+      max: 8
     },
     // Settings of Temperature value
     // name   = Name in CSV

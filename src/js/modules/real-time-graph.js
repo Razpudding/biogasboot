@@ -69,8 +69,8 @@ if (document.querySelector('#chart') && document.querySelector('#chart').clientW
   const xAxis = d3
     .axisBottom()
     .tickFormat(d => {
-      //Is this const even used?
-      //const date = d3.timeMinute.offset(d, -ticks);
+      //TODO:Is this const even used?
+      const date = d3.timeMinute.offset(d, -ticks);
       //console.log(d);
       return formatTime(d);
     })
@@ -145,11 +145,14 @@ if (document.querySelector('#chart') && document.querySelector('#chart').clientW
     //spread points into existing data
     data = [...data, ...points];
     //  -> Rewrote to match the intended logic
-    let dif = data.length - (ticks +1)
+    //TODO: this isn't working properly dynamically speaking so there's a magic number now
+    // Cant figure out why this was working properly before so at some point this should be fixed
+    let dif = data.length - (ticks * 5) //Has to be >810 with ticks at 240
     if (dif > 0) {
       data.splice(0, dif) 
     }
     //console.log("printing data");
+    console.log(data.length);
     //console.table(data)
     
     x

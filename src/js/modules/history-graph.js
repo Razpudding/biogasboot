@@ -83,7 +83,7 @@ if (document.querySelector('#history-graph') && document.querySelector('#history
   const yAxis = d3
     .axisLeft()
     .scale(y)
-    .ticks(4)
+    .ticks(10)
     .tickSize(-width);
 
   const y1Axis = d3
