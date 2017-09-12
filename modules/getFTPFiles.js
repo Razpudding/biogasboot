@@ -19,10 +19,11 @@ const checkForNewFilesIn = function (directoryKey) {
 
 function checkForNewLocalFiles(directoryKey) {
   // Check localy for new files if FTP is not working
+  //Make sure to filter out annoying .DS_Store files
   fs.readdir(path.join(__dirname, FTP[directoryKey].downloadDir), (err, files) => {
-    files.forEach(file => {
+    files.filter(item => !item.includes("DS_Store")).forEach(file => {
       fs.readFile(path.join(__dirname, `${FTP[directoryKey].downloadDir}${file}`), (err, data) => {
-        console.log("Adding file to mongodb", file);
+        console.log("Adding file to mongodb",directoryKey, file);
         if (err) throw err;
         parseFileDataToJSON(data, directoryKey);
       });
