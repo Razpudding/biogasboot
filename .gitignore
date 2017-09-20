@@ -5,6 +5,8 @@
 public/css/main.css
 public/js/index.js
 data/ftp/**/*.CSV
+.eslintrc
+.jshintrc
 
 # Logs
 logs

@@ -329,6 +329,7 @@ if (document.querySelector('#history-graph') && document.querySelector('#history
 
   // Update usage table
   function updateCompareUsage(url, indicator) {
+    console.log("contacting API at ", url);
     const compareContainer = document.querySelector('#compare');
     compareContainer.classList.add('loading');
     const xhttp = new XMLHttpRequest();

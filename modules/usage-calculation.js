@@ -4,6 +4,7 @@ const StatusPoint = require('../models/statusPoint');
 
 const usageCalculation = {
   init(req, res, range) {
+    console.log("usageCalculation triggered with", range)
     const inputRange = 1;
     const months = moment.duration(inputRange, 'months').valueOf();
     const startDate = moment(Number(range) * 1000);
@@ -103,6 +104,7 @@ const usageCalculation = {
     };
     let i;
     for (i = 1; i < output.length; i++) {
+
       // Unix time in seconds
       let currentTime = moment(output[i].Date).valueOf() / 1000;
       let beforeTime = moment(output[i - 1].Date).valueOf() / 1000;
@@ -214,25 +216,39 @@ const usageCalculation = {
       }
     };
     let i;
+    console.log(output[0].Date);
+    console.log(output[144].Date);
+    console.log(output[145].Date);
+    console.log(moment(output[144].Date));
+    console.log(moment(output[145].Date));
     for (i = 1; i < output.length; i++) {
       // Unix time in seconds
       let currentTime = moment(output[i].Date).valueOf() / 1000;
       let beforeTime = moment(output[i - 1].Date).valueOf() / 1000;
-      //if (currentTime >= startCount && currentTime <= endCount) {
-      // Adds seconds to
+
+      // Laurens: Ok so if I follow this correctly, the loops starts at index 1 because the code below always wants to
+      // Compare against the previous point (which would fail for i=0-1). If previous == 1, the device is counted as on
+      // TODO: There's a huge problem here where the datapoints being compared are sometimes weeks apart resulting in completely
+      //   random data. For some reason the datapoints are not all sorted chronologically. There's a dirty hack/fix now that at least avoids
+      //   negative values in the data table
       Object.keys(output[i].toObject()).forEach(function (key) {
         let valNumberBefore = Number(output[i - 1][key]);
         if (valNumberBefore === 1) {
-          // Added new seconds to object
-          deviceCollection[key].timeON += Number((currentTime - beforeTime));
-          // kWh = time in seconds / 3600 (is hours) * watts / 1000
-          deviceCollection[key].kWh = ((deviceCollection[key].timeON / 3600) * deviceCollection[key].watts / 1000).toFixed(2);
-          // Wh = time in seconds / 3600 (is hours) * watts
-          deviceCollection[key].Wh = ((deviceCollection[key].timeON / 3600) * deviceCollection[key].watts).toFixed(2);
+          if (beforeTime > currentTime) {
+            console.log("bef>cur", moment(output[i].Date), " --- ", moment(output[i-1].Date), "date: ", output[i].Date, " - ", output[i-1].Date);
+            console.log("bef", output[i-1].Date)
+            console.log("cur", output[i].Date)
+          }
+          else {
+            // Added new seconds to object
+            deviceCollection[key].timeON += Number((currentTime - beforeTime));
+            // kWh = time in seconds / 3600 (is hours) * watts / 1000
+            deviceCollection[key].kWh = ((deviceCollection[key].timeON / 3600) * deviceCollection[key].watts / 1000).toFixed(2);
+            // Wh = time in seconds / 3600 (is hours) * watts
+            deviceCollection[key].Wh = ((deviceCollection[key].timeON / 3600) * deviceCollection[key].watts).toFixed(2);
+          }
         }
-
       });
-      //}
     }
     // Returns when data is calculated
     if (i === output.length) {
