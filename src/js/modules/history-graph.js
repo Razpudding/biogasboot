@@ -136,66 +136,76 @@ if (document.querySelector('#history-graph') && document.querySelector('#history
   });
 
   // Get the data on initial load
-  d3.json(showMonth(firstMonth.value, firstYear.value), (error, data) => {
-    data = cleanData(data);
+  let url = showMonth(firstMonth.value, firstYear.value);
+  const xhttp = new XMLHttpRequest();
+  let response;
+  xhttp.onreadystatechange = function() {
+    if (this.readyState === 4 && this.status === 200) {        
+      response = xhttp.responseText;
+      let data = JSON.parse(response);
+  
+      data = cleanData(data);
 
-    // Scale the range of the data
-    x.domain(d3.extent(data, d => d.date));
+      // Scale the range of the data
+      x.domain(d3.extent(data, d => d.date));
 
-    if (drawnValues[0]) {
-      y.domain([usedValues[drawnValues[0] - 1].min, usedValues[drawnValues[0] - 1].max]);
-    }
+      if (drawnValues[0]) {
+        y.domain([usedValues[drawnValues[0] - 1].min, usedValues[drawnValues[0] - 1].max]);
+      }
 
-    if (drawnValues[1]) {
-      y1.domain([usedValues[drawnValues[1] - 1].min, usedValues[drawnValues[1] - 1].max]);
-    }
+      if (drawnValues[1]) {
+        y1.domain([usedValues[drawnValues[1] - 1].min, usedValues[drawnValues[1] - 1].max]);
+      }
 
-    // Add the valueline path.
-    if (drawnValues[0]) {
-      svg.append('path')
-        .attr('class', 'line first')
-        .attr('d', valueline(data));
-    } else {
-      svg.append('path')
-        .attr('class', 'line first');
-    }
+      // Add the valueline path.
+      if (drawnValues[0]) {
+        svg.append('path')
+          .attr('class', 'line first')
+          .attr('d', valueline(data));
+      } else {
+        svg.append('path')
+          .attr('class', 'line first');
+      }
 
-    if (drawnValues[1]) {
-      svg.append('path')
-        .attr('class', 'line compare')
-        .attr('d', compareValueline(data));
-    } else {
-      svg.append('path')
-        .attr('class', 'line compare');
-    }
+      if (drawnValues[1]) {
+        svg.append('path')
+          .attr('class', 'line compare')
+          .attr('d', compareValueline(data));
+      } else {
+        svg.append('path')
+          .attr('class', 'line compare');
+      }
 
-    // Add the X Axis
-    svg.append('g')
-      .attr('class', 'x axis')
-      .attr('transform', 'translate(0,' + height + ')')
-      .call(xAxis);
-
-    // Add the Y Axis
-    if (drawnValues[0]) { // if there are selected values
+      // Add the X Axis
       svg.append('g')
-        .attr('class', 'y axis')
-        .call(yAxis);
-    } else { // if not, just draw the 'g' element to be filled later
-      svg.append('g')
-        .attr('class', 'y axis');
-    }
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + height + ')')
+        .call(xAxis);
 
-    if (drawnValues[1]) { // if there are selected values
-      svg.append('g')
-        .attr('class', 'y axis right')
-        .attr('transform', `translate(${width})`)
-        .call(y1Axis);
-    } else { // if not, just draw the 'g' element to be filled later
-      svg.append('g')
-        .attr('class', 'y axis right')
-        .attr('transform', `translate(${width})`);
+      // Add the Y Axis
+      if (drawnValues[0]) { // if there are selected values
+        svg.append('g')
+          .attr('class', 'y axis')
+          .call(yAxis);
+      } else { // if not, just draw the 'g' element to be filled later
+        svg.append('g')
+          .attr('class', 'y axis');
+      }
+
+      if (drawnValues[1]) { // if there are selected values
+        svg.append('g')
+          .attr('class', 'y axis right')
+          .attr('transform', `translate(${width})`)
+          .call(y1Axis);
+      } else { // if not, just draw the 'g' element to be filled later
+        svg.append('g')
+          .attr('class', 'y axis right')
+          .attr('transform', `translate(${width})`);
+      }
     }
-  });
+    xhttp.open('GET', url, true);
+    xhttp.send();
+  };
 
   // Update graph with new data
   function updateData(url) {
