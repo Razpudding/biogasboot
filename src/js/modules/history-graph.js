@@ -140,10 +140,9 @@ if (document.querySelector('#history-graph') && document.querySelector('#history
   const xhttp = new XMLHttpRequest();
   let response;
   xhttp.onreadystatechange = function() {
-    if (this.readyState === 4 && this.status === 200) {        
+    if (this.readyState === 4 && this.status === 200) {
       response = xhttp.responseText;
       let data = JSON.parse(response);
-  
       data = cleanData(data);
 
       // Scale the range of the data
@@ -203,13 +202,12 @@ if (document.querySelector('#history-graph') && document.querySelector('#history
           .attr('transform', `translate(${width})`);
       }
     }
-    xhttp.open('GET', url, true);
-    xhttp.send();
   };
+  xhttp.open('GET', url, true);
+  xhttp.send();
 
   // Update graph with new data
   function updateData(url) {
-    console.log("update data calling to ", url)
     // Get the data again
     const xhttp = new XMLHttpRequest();
     let response;
@@ -289,7 +287,6 @@ if (document.querySelector('#history-graph') && document.querySelector('#history
     const monthFromMonthUnix = monthFromMonth / 1000;
 
     const url = `/api/range/monthperday?dateStart=${monthUnix}&dateEnd=${monthFromMonthUnix}&api_key=CMD17`;
-    console.log("showmonth calling to ", url)
     return url;
   }
 
@@ -338,13 +335,11 @@ if (document.querySelector('#history-graph') && document.querySelector('#history
     const monthUnix = month / 1000;
     //const monthFromMonthUnix = monthFromMonth / 1000;
     const url = `/api/status/range/${monthUnix}?api_key=CMD17`;
-    console.log("showmonthusage, gerating url", url)
     return url;
   }
 
   // Update usage table
   function updateCompareUsage(url, indicator) {
-    console.log("contacting through xhhtp API at ", url);
     const compareContainer = document.querySelector('#compare');
     compareContainer.classList.add('loading');
     const xhttp = new XMLHttpRequest();
