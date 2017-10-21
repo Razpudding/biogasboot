@@ -134,7 +134,7 @@ function webSokets(app, io) {
         sendTimeOutLow = false;
         // emitting the data to the frontend
         io.sockets.emit('dataPoint', dataCollection, config.tileStatus(dataPoints[i]));
-      }, 1000);
+      }, 500);
     });
 }
 

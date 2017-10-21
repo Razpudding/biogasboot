@@ -199,71 +199,76 @@ if (document.querySelector('#history-graph') && document.querySelector('#history
 
   // Update graph with new data
   function updateData(url) {
+    console.log("update data calling to ", url)
     // Get the data again
-    d3.json(url, (error, data) => {
-      if (!data) {
-        data = [];
-      }
+    const xhttp = new XMLHttpRequest();
+    let response;
+    xhttp.onreadystatechange = function() {
+      if (this.readyState === 4 && this.status === 200) {        
+        response = xhttp.responseText;
+        let data = JSON.parse(response);
+        data = cleanData(data);
 
-      data = cleanData(data);
+        // Scale the range of the data again
+        x.domain(d3.extent(data, d => {
+          return d.date;
+        }));
 
-      // Scale the range of the data again
-      x.domain(d3.extent(data, d => {
-        return d.date;
-      }));
+        // change domain if first value is in drawnValues array
+        if (drawnValues[0]) {
+          y.domain([usedValues[drawnValues[0] - 1].min, usedValues[drawnValues[0] - 1].max]);
+        }
 
-      // change domain if first value is in drawnValues array
-      if (drawnValues[0]) {
-        y.domain([usedValues[drawnValues[0] - 1].min, usedValues[drawnValues[0] - 1].max]);
-      }
+        // change domain if second value is in drawnValues array
+        if (drawnValues[1]) {
+          y1.domain([usedValues[drawnValues[1] - 1].min, usedValues[drawnValues[1] - 1].max]);
+        }
 
-      // change domain if second value is in drawnValues array
-      if (drawnValues[1]) {
-        y1.domain([usedValues[drawnValues[1] - 1].min, usedValues[drawnValues[1] - 1].max]);
-      }
+        // Select the section where changes are made
+        const svg = d3.select('body');
 
-      // Select the section where changes are made
-      const svg = d3.select('body');
+        // Make the changes
+        if (drawnValues[0]) {
+          svg.select('.line')
+            .attr('d', valueline(data));
+        } else {
+          svg.select('.line').node().setAttribute('d', '');
+        }
 
-      // Make the changes
-      if (drawnValues[0]) {
-        svg.select('.line')
-          .attr('d', valueline(data));
-      } else {
-        svg.select('.line').node().setAttribute('d', '');
-      }
-
-      if (drawnValues[1] && !singleMonth) { // check if there is a first value and it's not in singleMonth mode
-        svg.select('.line.compare')
-          .attr('d', compareValueline(data));
-      } else if (singleMonth) {
-        d3.json(showMonth(range.secondMonth, range.secondYear), compareData => {
-          compareData = cleanData(compareData);
-
+        if (drawnValues[1] && !singleMonth) { // check if there is a first value and it's not in singleMonth mode
           svg.select('.line.compare')
-            .attr('d', compareValueline(compareData));
-        });
-      } else {
-        svg.select('.line.compare').node().setAttribute('d', '');
-      }
+            .attr('d', compareValueline(data));
+        } else if (singleMonth) {
+          d3.json(showMonth(range.secondMonth, range.secondYear), compareData => {
+            compareData = cleanData(compareData);
 
-      svg.select('.x.axis')
-        .call(xAxis);
+            svg.select('.line.compare')
+              .attr('d', compareValueline(compareData));
+          });
+        } else {
+          svg.select('.line.compare').node().setAttribute('d', '');
+        }
 
-      if (drawnValues[0]) {
-        svg.select('.y.axis')
-          .call(yAxis);
-      } else {
-        svg.select('.y.axis').node().innerHMTL = '';
-      }
+        svg.select('.x.axis')
+          .call(xAxis);
 
-      if (drawnValues[1]) {
-        svg.select('.y.axis.right')
-          .call(y1Axis);
-      } else {
-        svg.select('.y.axis.right').node().innerHTML = '';
+        if (drawnValues[0]) {
+          svg.select('.y.axis')
+            .call(yAxis);
+        } else {
+          svg.select('.y.axis').node().innerHMTL = '';
+        }
+
+        if (drawnValues[1]) {
+          svg.select('.y.axis.right')
+            .call(y1Axis);
+        } else {
+          svg.select('.y.axis.right').node().innerHTML = '';
+        }
       }
-    });
+    }
+    xhttp.open('GET', url, true);
+    xhttp.send();
   }
 
   function showMonth(monthNumber, yearNumber) {
@@ -274,7 +279,7 @@ if (document.querySelector('#history-graph') && document.querySelector('#history
     const monthFromMonthUnix = monthFromMonth / 1000;
 
     const url = `/api/range/monthperday?dateStart=${monthUnix}&dateEnd=${monthFromMonthUnix}&api_key=CMD17`;
-
+    console.log("showmonth calling to ", url)
     return url;
   }
 
@@ -323,13 +328,13 @@ if (document.querySelector('#history-graph') && document.querySelector('#history
     const monthUnix = month / 1000;
     //const monthFromMonthUnix = monthFromMonth / 1000;
     const url = `/api/status/range/${monthUnix}?api_key=CMD17`;
-
+    console.log("showmonthusage, gerating url", url)
     return url;
   }
 
   // Update usage table
   function updateCompareUsage(url, indicator) {
-    console.log("contacting API at ", url);
+    console.log("contacting through xhhtp API at ", url);
     const compareContainer = document.querySelector('#compare');
     compareContainer.classList.add('loading');
     const xhttp = new XMLHttpRequest();
