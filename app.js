@@ -13,6 +13,7 @@ const mongo = require('mongodb');
 const mongoose = require('mongoose');
 const socketio = require('socket.io');
 const cors = require('cors');
+const Stomp = require('@stomp/stompjs')
 
 const app = express();
 app.use(cors());
@@ -63,8 +64,20 @@ const data = {
     setInterval(feedCalculation.init, intervalTime);
   }
 };
-
 data.init();
+
+//Ceuvel boat endpoint to connect to
+const boatEndPoint = '/exchange/power/07'
+const client = Stomp.client('ws://stomp.spectral.energy:15674/ws')
+client.connect(process.env.MQTT_USER, process.env.MQTT_PASS, onConnect, console.error, '/')
+
+function onConnect(something){
+  client.subscribe(boatEndPoint, onData);
+}
+
+function onData(data){
+ console.log('data') 
+}
 
 // WebSockets
 webSockets(app, io);
