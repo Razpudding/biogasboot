@@ -78,14 +78,19 @@ function sendGasBagLow() {
 }
 
 function webSokets(app, io) {
+  const dbOld = false  //Old means we connect to the old database with the old data selection, new means, well you get it
   // Setting paramerts for getting data out of the database
   //TODO: replace this with logic that selects the last month of data auto. start and end are hardcoded for the moment
-  const range = 1501502400;
-  const inputRange = 1;
+  const range = 1501502400; //IMPORTANT: this date range refers to the month of august 2017 the new data stream starts now
+  //                                        (2018) so the startdate timestamp has to be more recent.
+  const inputRange = 1; //This is a hack in the old system that allows a loop of # months. Currently one
   const months = moment.duration(inputRange, 'months').valueOf();
-  const startDate = moment(Number(range) * 1000);
+  const startDate = dbOld? moment(Number(range) * 1000) : moment().day(-1); //A week ago
   // const endDate = moment(Number(startDate + months));
-  const endDate = moment(Number(1503187200) * 1000);
+  const endDate = dbOld? moment(Number(1503187200) * 1000) : moment(); //Right now
+  console.log(moment());
+  console.log(moment());
+  
   // Query the database
   dataPoint.find({
     Date: {
@@ -96,6 +101,8 @@ function webSokets(app, io) {
     .sort([['Date', 'ascending']])
     // Execute script after getting data
     .exec((err, dataPoints) => {
+      console.log(dataPoints.length);
+      console.log(config.tileStatus(dataPoints[0]));
       // Setting variables for sending data to the frontend
       let i = 0;
       //What does sendItemsCount do and why is it 30?
@@ -104,6 +111,10 @@ function webSokets(app, io) {
       let sendTimeOutHigh = false;
       let sendTimeOutLow = false;
 
+      //This next line serves to replace the looping functionality below
+      io.sockets.emit('dataPoint', dataPoints, config.tileStatus(dataPoints[0]));
+
+      /* This is the old looping code which serves 30 datapoints as one collection
       //TODO: remove this when real data comes in. Resetting to an arbtrary point in time doesn't seem useful after that
       // For simulating real-time this interval was made, resetting I when index is too high
       setInterval(() => {
@@ -135,6 +146,7 @@ function webSokets(app, io) {
         // emitting the data to the frontend
         io.sockets.emit('dataPoint', dataCollection, config.tileStatus(dataPoints[i]));
       }, 500);
+      */
     });
 }
 

@@ -39,7 +39,8 @@ const operatorDashboard = require('./routes/operator/dashboard');
 const operatorDashboardHistory = require('./routes/operator/dashboard-history');
 
 // mongoose setup
-mongoose.connect(process.env.DB_URL);
+//mongoose.connect(process.env.DB_URL);
+mongoose.createConnection(process.env.DB_URL)   //TODO: remove this once issue with connecting to other DB has been fixed
 
 // Get files/data from FTP
 //console.log("getFTPfiles");
