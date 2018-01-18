@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DB_URL);
+mongoose.connect(process.env.DB_URL_NEW); //TODO: This needs to be switched manually when you want to switch to the old db, dont know how to fix that right now.
 
 const db = mongoose.connection;
 

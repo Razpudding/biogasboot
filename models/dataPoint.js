@@ -1,10 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs'); //TODO:remove
-require('dotenv').config();         //TODO: remove
-
-mongoose.connect(process.env.DB_URL); //TODO: remove
-
-const db = mongoose.connection;     //TODO: remove
 
 const DataPointSchema = mongoose.Schema({
   Date: {

@@ -1,11 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-require('dotenv').config();
-//     fileColumns: ['Date', 'Time', 'Storagetank_Mixe', 'Storagetank_Feed', 'Digester_Mixer', 'Digester_Heater_1', 'Digester_Heater_2', 'Gaspump', 'Mode_Stop', 'Mode_Manual', 'Mode_Auto', 'System_Started', 'Additive_Pump']
-
-mongoose.connect(process.env.DB_URL);
-
-const db = mongoose.connection;
 
 const StatusPointSchema = mongoose.Schema({
   Date: {
