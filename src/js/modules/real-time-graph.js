@@ -126,6 +126,7 @@ if (document.querySelector('#chart') && document.querySelector('#chart').clientW
 
   //When a set of data points is received from the socket, format the data and feed it to the tick loop
   socket.on('dataPoint', points => {
+    console.log("Received datapoint", points);
     const lastIndex = points.length - 1;
 
     const parsedDateTime = new Date(points[lastIndex]['Date']);

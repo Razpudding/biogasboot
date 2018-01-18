@@ -41,8 +41,7 @@ const operatorDashboardHistory = require('./routes/operator/dashboard-history');
 // mongoose setup
 //mongoose.connect(process.env.DB_URL);
 const dbOld = false;    //switch for connecting to the old vs new mongoDb
-mongoose.createConnection(process.env.DB_URL_NEW);
-//console.log(mongoose.createConnection(dbOld? process.env.DB_URL: process.env.DB_URL_NEW))   //TODO: remove this once issue with connecting to other DB has been fixed
+mongoose.createConnection(dbOld? process.env.DB_URL: process.env.DB_URL_NEW)
 
 // Get files/data from FTP
 //console.log("getFTPfiles");

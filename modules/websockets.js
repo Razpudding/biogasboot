@@ -102,7 +102,6 @@ function webSokets(app, io) {
     // Execute script after getting data
     .exec((err, dataPoints) => {
       console.log(dataPoints.length);
-      console.log(config.tileStatus(dataPoints[0]));
       // Setting variables for sending data to the frontend
       let i = 0;
       //What does sendItemsCount do and why is it 30?
@@ -112,7 +111,16 @@ function webSokets(app, io) {
       let sendTimeOutLow = false;
 
       //This next line serves to replace the looping functionality below
-      io.sockets.emit('dataPoint', dataPoints, config.tileStatus(dataPoints[0]));
+      setInterval(() => {
+        console.log(dataPoints[i])
+        if (i >= dataPoints.length){
+          i = 0
+        }
+        io.sockets.emit('dataPoint', dataPoints[i], config.tileStatus(dataPoints[0]));  //TODO: the last argument is not used I think, investigate and remove
+        i++;
+      }, 1000);
+      //TODO: this event doesnt seem to arrive on the clientside. Might be that its fired before the client can receive it.
+      //      Reactivate the delayed constant firing mechanism with setinterval below
 
       /* This is the old looping code which serves 30 datapoints as one collection
       //TODO: remove this when real data comes in. Resetting to an arbtrary point in time doesn't seem useful after that
