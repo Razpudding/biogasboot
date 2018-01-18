@@ -134,7 +134,6 @@ if (document.querySelector('#chart') && document.querySelector('#chart').clientW
     maxDate = parsedDateTime;
     minDate = d3.timeMinute.offset(maxDate, -ticks);
     points.forEach(point => {
-
       point.dateTime = new Date(point['Date']);
     });
 

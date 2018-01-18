@@ -85,11 +85,11 @@ function webSokets(app, io) {
   //                                        (2018) so the startdate timestamp has to be more recent.
   const inputRange = 1; //This is a hack in the old system that allows a loop of # months. Currently one
   const months = moment.duration(inputRange, 'months').valueOf();
-  const startDate = dbOld? moment(Number(range) * 1000) : moment().day(-1); //A week ago
+  const startDate = dbOld? moment(Number(range) * 1000) : moment().month(-7);
   // const endDate = moment(Number(startDate + months));
-  const endDate = dbOld? moment(Number(1503187200) * 1000) : moment(); //Right now
-  console.log(moment());
-  console.log(moment());
+  const endDate = dbOld? moment(Number(1503187200) * 1000) : moment();
+  console.log("startDate", startDate);
+  console.log("endDate", endDate);
   
   // Query the database
   dataPoint.find({
@@ -116,7 +116,7 @@ function webSokets(app, io) {
         if (i >= dataPoints.length){
           i = 0
         }
-        io.sockets.emit('dataPoint', dataPoints[i], config.tileStatus(dataPoints[0]));  //TODO: the last argument is not used I think, investigate and remove
+        io.sockets.emit('dataPoint', Array(dataPoints[i]), config.tileStatus(dataPoints[0]));  //TODO: the last argument is not used I think, investigate and remove
         i++;
       }, 1000);
       //TODO: this event doesnt seem to arrive on the clientside. Might be that its fired before the client can receive it.
