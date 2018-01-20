@@ -40,8 +40,7 @@ const operatorDashboard = require('./routes/operator/dashboard');
 const operatorDashboardHistory = require('./routes/operator/dashboard-history');
 
 // mongoose setup
-//mongoose.connect(process.env.DB_URL);
-const dbOld = false;    //switch for connecting to the old vs new mongoDb
+const dbOld = false;    //switch for connecting to the old vs new mongoDb IMPORTANT: also make the switch in the user model!
 mongoose.createConnection(dbOld? process.env.DB_URL: process.env.DB_URL_NEW)
 
 // Get files/data from FTP
@@ -56,7 +55,7 @@ const feedCalculation = require('./modules/feed-calculation');
 
 const data = {
   init() {
-    consumeLiveStream.init();
+    if(!dbOld) {consumeLiveStream.init() } //Only connect to the live datastream if working on new db as well
     gasCalculation.init();
     feedCalculation.init();
     this.interval();
@@ -71,7 +70,7 @@ const data = {
 data.init();
 
 // WebSockets
-webSockets(app, io);
+webSockets(app, io, dbOld);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

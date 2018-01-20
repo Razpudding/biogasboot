@@ -77,21 +77,19 @@ function sendGasBagLow() {
   });
 }
 
-function webSokets(app, io) {
-  const dbOld = false  //Old means we connect to the old database with the old data selection, new means, well you get it
-  // Setting paramerts for getting data out of the database
-  //TODO: replace this with logic that selects the last month of data auto. start and end are hardcoded for the moment
+function webSokets(app, io, dbOld) {
+  console.log("working with old db?", dbOld)
+  // Setting parameters for getting data out of the database
   const range = 1501502400; //IMPORTANT: this date range refers to the month of august 2017 the new data stream starts now
   //                                        (2018) so the startdate timestamp has to be more recent.
   const inputRange = 1; //This is a hack in the old system that allows a loop of # months. Currently one
-  const months = moment.duration(inputRange, 'months').valueOf();
-  const startDate = dbOld? moment(Number(range) * 1000) : moment().month(-7);
-  // const endDate = moment(Number(startDate + months));
+  const playBackTime = moment().hour(-1);  //Determines how far back the data is loaded for the realtime overview. If it's 0, only new data is shown
+  const startDate = dbOld? moment(Number(range) * 1000) : playBackTime;
   const endDate = dbOld? moment(Number(1503187200) * 1000) : moment();
-  console.log("startDate", startDate);
-  console.log("endDate", endDate);
-  
+  const liveStreamDelay = 1000; //This determines how often new data should be sent to the client. Ideally it would get sent right when it comes in
+  const dbUpdateDelay = 60000; //This determines how often the app checks for new data in the db
   // Query the database
+  
   dataPoint.find({
     Date: {
       $gte: startDate.toDate(),
@@ -102,6 +100,10 @@ function webSokets(app, io) {
     // Execute script after getting data
     .exec((err, dataPoints) => {
       console.log(dataPoints.length);
+      if(dataPoints.length <= 0){
+        console.log("No data found, datavis will show nothing :(")
+        return;
+      }
       // Setting variables for sending data to the frontend
       let i = 0;
       //What does sendItemsCount do and why is it 30?
@@ -110,7 +112,7 @@ function webSokets(app, io) {
       let sendTimeOutHigh = false;
       let sendTimeOutLow = false;
 
-      //This next line serves to replace the looping functionality below
+      //Send data to the client at set intervals
       setInterval(() => {
         //console.log(dataPoints[i])
         if (i >= dataPoints.length){
@@ -118,43 +120,7 @@ function webSokets(app, io) {
         }
         io.sockets.emit('dataPoint', Array(dataPoints[i]), config.tileStatus(dataPoints[0]));  //TODO: the last argument is not used I think, investigate and remove
         i++;
-      }, 1000);
-      //TODO: this event doesnt seem to arrive on the clientside. Might be that its fired before the client can receive it.
-      //      Reactivate the delayed constant firing mechanism with setinterval below
-
-      /* This is the old looping code which serves 30 datapoints as one collection
-      //TODO: remove this when real data comes in. Resetting to an arbtrary point in time doesn't seem useful after that
-      // For simulating real-time this interval was made, resetting I when index is too high
-      setInterval(() => {
-        if (!dataPoints[i + sendItemsCount]) {
-          console.log("Ran out of data to serve, resetting index and reserving data from start")
-          i = 0;
-        }
-        const dataCollection = [];
-        // Looping over data collection and checking if bag height is in range.
-        //TODO: turned this func off because it was buggy. Fix and turn on again later
-        for (let x = 0; x < sendItemsCount; x++) {
-          dataCollection.push(dataPoints[x + i]);
-          // if (dataPoints[x + i].Bag_Height >= usedValues[2].high) {
-          //   //Why is it x+i-1, wouldn't that result in datapoint[-1] on the first run, which would yield undefined?
-          //   if (dataPoints[x + i - 1].Bag_Height < usedValues[2].high && sendTimeOutHigh === false) {
-          //     sendTimeOutHigh = true;
-          //     sendGasBagHigh();
-          //   }
-          // } else if (dataPoints[x + i].Bag_Height <= usedValues[2].low) {
-          //   if (dataPoints[x + i - 1].Bag_Height > usedValues[2].low && sendTimeOutLow === false) {
-          //     sendTimeOutLow = true;
-          //     sendGasBagLow();
-          //   }
-          // }
-        }
-        i += sendItemsCount;
-        sendTimeOutHigh = false;
-        sendTimeOutLow = false;
-        // emitting the data to the frontend
-        io.sockets.emit('dataPoint', dataCollection, config.tileStatus(dataPoints[i]));
-      }, 500);
-      */
+      }, liveStreamDelay);
     });
 }
 
