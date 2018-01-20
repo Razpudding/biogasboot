@@ -20,6 +20,7 @@ app.use(cors());
 const FTP = require('./modules/getFTPFiles');
 const webSockets = require('./modules/websockets');
 const serviceWorker = require('./modules/server-service-worker');
+const consumeLiveStream = require('./modules/consume-live-stream');
 
 const db = mongoose.connection;
 
@@ -55,6 +56,7 @@ const feedCalculation = require('./modules/feed-calculation');
 
 const data = {
   init() {
+    consumeLiveStream.init();
     gasCalculation.init();
     feedCalculation.init();
     this.interval();

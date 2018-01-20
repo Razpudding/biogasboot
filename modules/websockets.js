@@ -112,7 +112,7 @@ function webSokets(app, io) {
 
       //This next line serves to replace the looping functionality below
       setInterval(() => {
-        console.log(dataPoints[i])
+        //console.log(dataPoints[i])
         if (i >= dataPoints.length){
           i = 0
         }
