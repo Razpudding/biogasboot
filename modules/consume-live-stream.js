@@ -5,6 +5,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const Stomp = require('@stomp/stompjs')
 const moment = require('moment');
+const webSocket = require('./websockets');
 require('dotenv').config();		//Secret info
 
 //Settings and vars
@@ -28,7 +29,7 @@ function onConnect(something){
 //When data is received, process it and store it in MongoDB
 function onData(data){
 	console.log("received data, will store in MongoDB")
-	console.log(data.body);
+	//console.log(data.body);
 	data = JSON.parse(data.body)
 	const dataPoint = new DataPoint({
 		Date: moment(`${data.Date} ${data.Time}`, 'DD/MM/YYYY HH:mm:ss').add(1, 'hours').format('YYYY-MM-DD HH:mm:ss'),
@@ -37,9 +38,13 @@ function onData(data){
 		pH_Value: data['pH_Value'],
 		Bag_Height: data['Bag_Height']
 	})
+	console.log(dataPoint)
 	dataPoint
 		.save()
-		.then(dataPoint => { return DataPoint.find() })
+		//Send the stored data to the websocket module so it can serve it to the frontend :)
+		.then(newDataPoint => webSocket.sendOne(newDataPoint))	 
+		//.then(dataPoint => console.log(dataPoint.id))
+		//.then(dataPoint => { return DataPoint.find() })
 		.catch(err => { throw Error(err) })
 	const statusPoint = new StatusPoint(data)
 	//console.log(statusPoint)
@@ -47,7 +52,7 @@ function onData(data){
 	statusPoint.Digester_Heater_1 = data['Digester_Heater_']
 	statusPoint
 		.save()
-		.then(statusPoint => { return StatusPoint.find()})
+		//.then(statusPoint => { return StatusPoint.find()})
 		.catch(err => { throw Error(err) })
 }
 

@@ -56,6 +56,7 @@ const feedCalculation = require('./modules/feed-calculation');
 const data = {
   init() {
     if(!dbOld) {consumeLiveStream.init() } //Only connect to the live datastream if working on new db as well
+    webSockets.init(app, io, dbOld);
     gasCalculation.init();
     feedCalculation.init();
     this.interval();
@@ -68,9 +69,6 @@ const data = {
 };
 
 data.init();
-
-// WebSockets
-webSockets(app, io, dbOld);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -134,6 +132,7 @@ app.use((err, req, res, next) => {
 
 io.on('connection', socket => {
   console.log('CONNECTION');
+  webSockets.sendInitialData();
 });
 
 app.use('/', index);

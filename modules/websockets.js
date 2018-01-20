@@ -77,51 +77,82 @@ function sendGasBagLow() {
   });
 }
 
-function webSokets(app, io, dbOld) {
-  console.log("working with old db?", dbOld)
-  // Setting parameters for getting data out of the database
-  const range = 1501502400; //IMPORTANT: this date range refers to the month of august 2017 the new data stream starts now
-  //                                        (2018) so the startdate timestamp has to be more recent.
-  const inputRange = 1; //This is a hack in the old system that allows a loop of # months. Currently one
-  const playBackTime = moment().hour(-1);  //Determines how far back the data is loaded for the realtime overview. If it's 0, only new data is shown
-  const startDate = dbOld? moment(Number(range) * 1000) : playBackTime;
-  const endDate = dbOld? moment(Number(1503187200) * 1000) : moment();
-  const liveStreamDelay = 1000; //This determines how often new data should be sent to the client. Ideally it would get sent right when it comes in
-  const dbUpdateDelay = 60000; //This determines how often the app checks for new data in the db
-  // Query the database
-  
-  dataPoint.find({
-    Date: {
-      $gte: startDate.toDate(),
-      $lt: endDate.toDate()
+const webSockets = {
+  init(app, io, dbOld){
+    console.log("working with old db?", dbOld)
+    this.app = app;
+    this.io = io;
+    if(dbOld){
+      serveLoop()
     }
-  })
-    .sort([['Date', 'ascending']])
-    // Execute script after getting data
-    .exec((err, dataPoints) => {
-      console.log(dataPoints.length);
-      if(dataPoints.length <= 0){
-        console.log("No data found, datavis will show nothing :(")
-        return;
+  },
+  //This function queries the db and either serves some data on a loop as a demo or the latest datapoint
+  serveLoop(){  
+    // Setting parameters for getting data out of the database
+    const range = 1501502400; //IMPORTANT: this date range refers to the month of august 2017 the new data stream starts now
+    //                                        (2018) so the startdate timestamp has to be more recent.
+    const inputRange = 1; //This is a hack in the old system that allows a loop of # months. Currently one
+    const playBackTime = moment().hour(-1);  //Determines how far back the data is loaded for the realtime overview. If it's 0, only new data is shown
+    const startDate = this.dbOld? moment(Number(range) * 1000) : playBackTime;
+    const endDate = this.dbOld? moment(Number(1503187200) * 1000) : moment();
+    const liveStreamDelay = 1000; //This determines how often new data should be sent to the client. Ideally it would get sent right when it comes in
+    const dbUpdateDelay = 60000; //This determines how often the app checks for new data in the db
+    // Query the database
+    
+    dataPoint.find({
+      Date: {
+        $gte: startDate.toDate(),
+        $lt: endDate.toDate()
       }
-      // Setting variables for sending data to the frontend
-      let i = 0;
-      //What does sendItemsCount do and why is it 30?
-      const sendItemsCount = 30;
-      // Stop backend from spamming notifcations
-      let sendTimeOutHigh = false;
-      let sendTimeOutLow = false;
-
-      //Send data to the client at set intervals
-      setInterval(() => {
-        //console.log(dataPoints[i])
-        if (i >= dataPoints.length){
-          i = 0
+    })
+      .sort([['Date', 'ascending']])
+      // Execute script after getting data
+      .exec((err, dataPoints) => {
+        console.log(dataPoints.length);
+        if(dataPoints.length <= 0){
+          console.log("No data found, datavis will show nothing :(")
+          return;
         }
-        io.sockets.emit('dataPoint', Array(dataPoints[i]), config.tileStatus(dataPoints[0]));  //TODO: the last argument is not used I think, investigate and remove
-        i++;
-      }, liveStreamDelay);
-    });
+        // Setting variables for sending data to the frontend
+        let i = 0;
+        //What does sendItemsCount do and why is it 30?
+        const sendItemsCount = 30;
+        // Stop backend from spamming notifcations
+        let sendTimeOutHigh = false;
+        let sendTimeOutLow = false;
+
+        //Send data to the client at set intervals
+        setInterval(() => {
+          //console.log(dataPoints[i])
+          if (i >= dataPoints.length){
+            i = 0
+          }
+          this.io.sockets.emit('dataPoint', Array(dataPoints[i]), config.tileStatus(dataPoints[0]));  //TODO: the last argument is not used I think, investigate and remove
+          i++;
+        }, liveStreamDelay);
+      });
+  },
+  //Send a user some initial data so the realtime graph has something to show
+  sendInitialData(){
+    console.log("sending user initial data")
+    dataPoint.find({
+      Date: {
+        $gte: moment().day(-1).toDate(),
+        $lt: moment().toDate()
+      }
+    })
+      .sort([['Date', 'ascending']])
+      // Execute script after getting data
+      .exec((err, dataPoints) => {
+        this.io.sockets.emit('dataPoint', dataPoints, config.tileStatus(dataPoints[0])); 
+      });
+  },
+  //Send a user a single datapoint
+  sendOne(dataPoint){
+    console.log('sending single datapoint', dataPoint)
+    this.io.sockets.emit('dataPoint', Array(dataPoint), config.tileStatus(dataPoint));  //TODO: the last argument is not used I think, investigate and remove
+  }
 }
 
-module.exports = webSokets;
+
+module.exports = webSockets;
