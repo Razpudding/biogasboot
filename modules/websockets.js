@@ -97,8 +97,8 @@ const webSockets = {
     const endDate = this.dbOld? moment(Number(1503187200) * 1000) : moment();
     const liveStreamDelay = 1000; //This determines how often new data should be sent to the client. Ideally it would get sent right when it comes in
     const dbUpdateDelay = 60000; //This determines how often the app checks for new data in the db
+
     // Query the database
-    
     dataPoint.find({
       Date: {
         $gte: startDate.toDate(),
@@ -115,8 +115,6 @@ const webSockets = {
         }
         // Setting variables for sending data to the frontend
         let i = 0;
-        //What does sendItemsCount do and why is it 30?
-        const sendItemsCount = 30;
         // Stop backend from spamming notifcations
         let sendTimeOutHigh = false;
         let sendTimeOutLow = false;
