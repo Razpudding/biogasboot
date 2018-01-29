@@ -133,13 +133,9 @@ const webSockets = {
   //Send a user some initial data so the realtime graph has something to show
   sendInitialData(){
     console.log("sending user initial data")
-    dataPoint.find({
-      Date: {
-        $gte: moment().day(-1).toDate(),
-        $lt: moment().toDate()
-      }
-    })
-      .sort([['Date', 'ascending']])
+    dataPoint.find()
+      .sort([['Date', 'descending']])
+      .limit(150)
       // Execute script after getting data
       .exec((err, dataPoints) => {
         this.io.sockets.emit('dataPoint', dataPoints, config.tileStatus(dataPoints[0])); 
