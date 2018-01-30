@@ -13,23 +13,13 @@ const mongo = require('mongodb');
 const mongoose = require('mongoose');
 const socketio = require('socket.io');
 const cors = require('cors');
-
 const app = express();
 app.use(cors());
-// Init modules
+// Load modules
 const FTP = require('./modules/getFTPFiles');
 const webSockets = require('./modules/websockets');
 const serviceWorker = require('./modules/server-service-worker');
 const consumeLiveStream = require('./modules/consume-live-stream');
-
-const db = mongoose.connection;
-
-// Socket.io connection
-const io = socketio();
-app.io = io;
-
-require('dotenv').config();
-
 const index = require('./routes/index');
 const auth = require('./routes/auth');
 const users = require('./routes/users');
@@ -38,21 +28,26 @@ const error = require('./routes/error');
 const customerDashboard = require('./routes/customer-dashboard');
 const operatorDashboard = require('./routes/operator/dashboard');
 const operatorDashboardHistory = require('./routes/operator/dashboard-history');
+// Init hourly API calls
+const gasCalculation = require('./modules/gas-calculation');
+const feedCalculation = require('./modules/feed-calculation');
+require('dotenv').config();
+
+// Socket.io connection
+const io = socketio();
+app.io = io;
 
 // mongoose setup
 const dbOld = false;    //switch for connecting to the old vs new mongoDb IMPORTANT: also make the switch in the user model!
 mongoose.createConnection(dbOld? process.env.DB_URL: process.env.DB_URL_NEW)
 
-// Get files/data from FTP
+// Enable these next lines to check for csv files with sensordata in the ftp folder and load them into MongoDb
 //console.log("getFTPfiles");
 //FTP.checkForNewLocalFiles('value');
 //FTP.checkForNewLocalFiles('status');
 // FTP.checkForNewLocalFiles('alarm'); // does not work with current filenames
 
-// Init hourly API calls
-const gasCalculation = require('./modules/gas-calculation');
-const feedCalculation = require('./modules/feed-calculation');
-
+//Kick off calculations and websockets
 const data = {
   init() {
     if(!dbOld) {consumeLiveStream.init() } //Only connect to the live datastream if working on new db as well
@@ -67,7 +62,6 @@ const data = {
     setInterval(feedCalculation.init, intervalTime);
   }
 };
-
 data.init();
 
 // view engine setup
@@ -130,8 +124,9 @@ app.use((err, req, res, next) => {
   res.render('error');
 });
 
+//Tried to move this to websockets but ran into issues with bin/www
 io.on('connection', socket => {
-  console.log('CONNECTION');
+  console.log('Client Connected');
   webSockets.sendInitialData();
 });
 

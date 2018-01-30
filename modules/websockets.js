@@ -89,15 +89,10 @@ const webSockets = {
   //This function queries the db and either serves some data on a loop as a demo or the latest datapoint
   serveLoop(){  
     // Setting parameters for getting data out of the database
-    const range = 1501502400; //IMPORTANT: this date range refers to the month of august 2017 the new data stream starts now
-    //                                        (2018) so the startdate timestamp has to be more recent.
-    const inputRange = 1; //This is a hack in the old system that allows a loop of # months. Currently one
     const playBackTime = moment().hour(-1);  //Determines how far back the data is loaded for the realtime overview. If it's 0, only new data is shown
     const startDate = this.dbOld? moment(Number(range) * 1000) : playBackTime;
     const endDate = this.dbOld? moment(Number(1503187200) * 1000) : moment();
     const liveStreamDelay = 1000; //This determines how often new data should be sent to the client. Ideally it would get sent right when it comes in
-    const dbUpdateDelay = 60000; //This determines how often the app checks for new data in the db
-
     // Query the database
     dataPoint.find({
       Date: {
@@ -147,6 +142,5 @@ const webSockets = {
     this.io.sockets.emit('dataPoint', Array(dataPoint), config.tileStatus(dataPoint));  //TODO: the last argument is not used I think, investigate and remove
   }
 }
-
 
 module.exports = webSockets;
