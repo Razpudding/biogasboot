@@ -29,7 +29,6 @@ const getUsedValues = function () {
 };
 // Fill the values
 const usedValues = getUsedValues();
-
 let payload;
 
 // Send notification
@@ -108,15 +107,9 @@ const webSockets = {
           console.log("No data found, datavis will show nothing :(")
           return;
         }
-        // Setting variables for sending data to the frontend
         let i = 0;
-        // Stop backend from spamming notifcations
-        let sendTimeOutHigh = false;
-        let sendTimeOutLow = false;
-
         //Send data to the client at set intervals
         setInterval(() => {
-          //console.log(dataPoints[i])
           if (i >= dataPoints.length){
             i = 0
           }
